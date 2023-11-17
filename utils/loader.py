@@ -57,7 +57,7 @@ def voxel_to_coordinates(voxel_data, voxel_size=0.01, threshold = 0):
 
 
 class SemanticKITTIDataset(Dataset):
-    def __init__(self, root_dir=SEMANTICKITTI_DIR, mode='train', sequences=['00'], downsample=False, get_vox_lidar=False, get_vox_invalid=False, get_vox_occluded=False):
+    def __init__(self, root_dir=SEMANTICKITTI_DIR, mode='train', sequences=['00'], split_ratio=0.8, downsample=False, get_vox_lidar=False, get_vox_invalid=False, get_vox_occluded=False):
         """
         Args:
             root_dir (string): Directory with all the images and corresponding voxel data.
@@ -212,7 +212,7 @@ class SemanticKITTIDataset(Dataset):
             self.image_names.extend([(seq, img_name) for img_name in seq_image_names])
         
         #random.shuffle(self.image_names)
-        split_idx = int(len(self.image_names) * 0.8 )
+        split_idx = int(len(self.image_names) * split_ratio )
         
         if self.mode == 'train':
             self.image_names = self.image_names[:split_idx]
