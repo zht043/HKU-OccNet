@@ -1,0 +1,1 @@
+SEMANTICKITTI_DIR = "/workspace/Dataset/dataset"
