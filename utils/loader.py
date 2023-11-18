@@ -211,7 +211,6 @@ class SemanticKITTIDataset(Dataset):
             seq_image_names = [f.split('.')[0] for f in os.listdir(self.image2_dir[seq]) if f.endswith('.png')]
             self.image_names.extend([(seq, img_name) for img_name in seq_image_names])
         
-        #random.shuffle(self.image_names)
         split_idx = int(len(self.image_names) * split_ratio )
         
         if self.mode == 'train':
