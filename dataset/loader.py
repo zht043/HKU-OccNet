@@ -151,6 +151,8 @@ label_mapping_lite_inv = {
 label_mapping_lite_from_ori = {
     0 : 0,     # "unlabeled"
     1 : 0,     # "outlier" mapped to "unlabeled" --------------------------mapped
+    3:3, # ???
+    9 : 9,     # empty
     10: 1,     # "car"
     11: 2,     # "bicycle"
     13: 1,     # "bus" mapped to "other-vehicle" --------------------------mapped
@@ -1079,7 +1081,15 @@ class SemanticKITTIDatasetLite(Dataset):
         
         
         
-        voxel_labels = np.fromfile(label_name, dtype=np.uint16).reshape(256, 256, 32).astype(np.float32)
+        voxel_labels = np.fromfile(label_name, dtype=np.uint16).reshape(256, 256, 32).astype(np.uint8)
+        voxel_occluded = unpack(np.fromfile(occluded_name, dtype=np.uint8)).reshape(256, 256, 32)
+        
+
+        voxel_labels = np.where(voxel_occluded == 1, voxel_labels, 9)
+        #print(voxel_labels.shape,np.unique(voxel_labels))
+
+
+
         if self.downsample:
             voxel_labels = voxel_labels[::2, ::2, ::2]
             #voxel_labels = self._downsample_label(voxel_labels, downscale=2)
