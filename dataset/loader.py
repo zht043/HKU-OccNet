@@ -1084,7 +1084,8 @@ class SemanticKITTIDatasetLite(Dataset):
             voxel_labels = voxel_labels[::2, ::2, ::2]
             #voxel_labels = self._downsample_label(voxel_labels, downscale=2)
             #voxel_occluded = self._downsample_label(voxel_occluded, downscale=2)
-        
+        voxel_labels = np.flip(voxel_labels,1)
+        voxel_labels = np.flip(voxel_labels,0)
         voxel_labels = torch.tensor(np.vectorize(label_mapping_lite_from_ori.get)(voxel_labels))
         
         # Load voxel data and convert to tensor

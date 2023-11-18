@@ -375,3 +375,43 @@ def visualize_voxels(voxel_data, key = 'voxel_labels',size = None, marker = None
         ipv.xyzlabel('y','x','z')
         ipv.view(0, -50, distance=2.5)
         ipv.show()
+
+
+def visualize_voxels_raw(voxel_data, key = 'voxel_labels',size = None, marker = None):
+
+        max_idx = {
+            'voxel_invalid':1,
+            'voxel_occluded':1,
+            'voxel':1,
+            'mapped_label':21,
+            'mapped_lite':10,
+        }
+            
+        x, y, z, tags = voxel_to_coordinates(voxel_data, voxel_size = 1 / voxel_data.shape[0], threshold = -1 if key in ['voxel_invalid','voxel_occluded'] else 0)
+
+        # 创建颜色比例尺
+        color_scale = bqplot.scales.ColorScale(min=0, max=max_idx.get(key, 255), colors=["#f00", "#0f0", "#00f"])
+
+        fig = ipv.figure()
+
+        # 确定tags中的唯一值
+        unique_tags = np.unique(tags)
+
+        # 为每个唯一的tag值创建一个scatter
+        for tag in unique_tags:
+            # 过滤出当前tag的坐标
+            mask = tags == tag
+            x_filtered, y_filtered, z_filtered, tags_f = x[mask], y[mask], z[mask], tags[mask]
+            # 创建scatter
+            if key=='voxel_labels':
+                ipv.scatter(x_filtered,y_filtered, z_filtered, color=tags_f, color_scale=color_scale, marker=marker or 'box', size=size or 0.2, description="{}, len({})={}".format(labels[tag],str(tag),x_filtered.shape[0]))
+            elif key=='mapped_label':
+                ipv.scatter(1-y_filtered,x_filtered, z_filtered, color=tags_f, color_scale=color_scale, marker=marker or 'box', size=size or 0.2, description="{}, len({})={}".format(labels[learning_map_inv[tag]],str(tag),x_filtered.shape[0]))
+            elif key=='mapped_lite':
+                ipv.scatter(1-y_filtered,x_filtered, z_filtered, color=tags_f, color_scale=color_scale, marker=marker or 'box', size=size or 0.5, description="{}, len({})={}".format(labels_lite[tag],str(tag),x_filtered.shape[0]))
+            else:
+                ipv.scatter(1-y_filtered,x_filtered, z_filtered, color=tags_f, color_scale=color_scale, marker=marker or 'box', size=size or 0.2, description="len({})={}".format(str(tag),x_filtered.shape[0]))
+        #ipv.scatter(1-y,x, z, color=tags, color_scale=color_scale, marker=marker or 'box', size=size or 0.1)
+        ipv.xyzlabel('x','y','z')
+        ipv.view(0, -50, distance=2.5)
+        ipv.show()
