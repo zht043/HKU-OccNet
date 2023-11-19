@@ -45,7 +45,7 @@ labels= {
         259: "moving-other-vehicle"
 }
 
-labels_lite = ['unlabeled', 'vehicle', 'two-wheeler', 'person', 'road', 'parking', 'sidewalk', 'building', 'natural', 'manmade']
+labels_lite = ['unlabeled', 'vehicle', 'two-wheeler', 'person', 'road', 'sidewalk', 'building', 'natural', 'manmade', 'empty']
 
 learning_map_inv= {
         0: 0,
