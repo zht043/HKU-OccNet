@@ -1,0 +1,56 @@
+sudo apt-get update
+sudo apt-get install build-essential libssl-dev libffi-dev libgit2-dev libgl1-mesa-glx
+
+conda update -n base -c conda-forge conda
+pip install --upgrade jupyter-client jupyterlab-server nbconvert jinja2 entrypoints
+
+
+#MMDetection3d
+git clone https://github.com/open-mmlab/mmdetection3d.git -b dev-1.x
+cd mmdetection3d
+
+pip install -U openmim
+mim install mmengine
+mim install 'mmcv>=2.0.0rc4'
+mim install 'mmdet>=3.0.0'
+
+pip install -v -e .
+
+
+##Kitti Tools
+git clone https://github.com/PRBonn/semantic-kitti-api.git
+cd semantic-kitti-api
+sudo apt install python3-pyqt5.qtopengl # for visualization
+sudo pip3 install -r requirements.txt
+
+pip install pykitti
+
+##stero-transformer
+cd  stereo-transformer/
+pip install -r requirements.txt
+(in requirements.txt, comment out pygit)
+gdown 1UUESCCnOsb7TqzwYMkVV3d23k8shxNcE #pretrained weight
+
+##ipyvolume 3d visualizer
+pip install ipyvolume
+conda install -c conda-forge ipyvuetify
+jupyter labextension install jupyter-vuetify
+jupyter labextension update --all
+jupyter lab clean && jupyter lab build
+
+
+
+
+##occdepth(failed：CUDA HOME issue)
+gdown 1MGJ_HZcuW5UpULpOeJV0M5ZrT-98j7OE #pretrained weight
+git clone https://github.com/megvii-research/OccDepth.git
+cd OccDepth/
+pip install -r requirements.txt 
+
+
+##VoxFormer(failed：CUDA HOME issue)
+conda install -c omgarcia gcc-6 # gcc-6.2
+pip install timm
+
+cd VoxFormer && mkdir ckpts && cd ckpts
+gdown 1A4Efx7OQ2KVokM1XTbZ6Lf2Q5P-srsyE

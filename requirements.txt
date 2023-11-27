@@ -1,0 +1,13 @@
+numpy
+pillow
+scikit-learn
+tqdm
+albumentations
+matplotlib
+torchsummary
+ipyvolume
+ipython_genutils
+plotly
+numba
+pytorch-lightning
+gdown
