@@ -1033,6 +1033,20 @@ class SemanticKITTIDatasetLite(Dataset):
         self.voxels_dir = {}
         self.downsample = downsample
         
+        from utils.calib_utils import  read_calib, get_projections
+        img_width, img_height = 1241, 376
+        calib = read_calib("/workspace/HKU-OccNet/calib.txt")
+        calib_proj = get_projections(img_width, img_height, calib)
+
+        vox_origin = torch.tensor([0, 128, 10])
+
+        self.vf_mask = calib_proj['fov_mask_1'].view(256, 256, 32)
+        self.vf_mask_np = self.vf_mask.numpy().astype(np.uint8)| np.flip(self.vf_mask.numpy().astype(np.uint8),1)
+        #self.vf_mask_np[int(0.6 * 256):,:,:] = False
+
+        self.cull_mask = torch.zeros((256, 256, 32), dtype=torch.float)
+        self.cull_mask[:int(0.6 * 256), :, :] = True
+    
     
         for seq in self.sequences:
             self.image2_dir[seq] = os.path.join(root_dir, 'sequences', seq, 'image_2')
@@ -1086,6 +1100,8 @@ class SemanticKITTIDatasetLite(Dataset):
         
 
         voxel_labels = np.where(voxel_occluded == 1, voxel_labels, 9)
+        #voxel_labels = np.where(self.vf_mask == 1, voxel_labels, 0)
+        voxel_labels = np.where(self.vf_mask_np == 1, voxel_labels, 0)
         #print(voxel_labels.shape,np.unique(voxel_labels))
 
 
@@ -1350,6 +1366,48 @@ class SemanticKITTIDatasetLite(Dataset):
         ipv.view(0, -50, distance=2.5)
         ipv.show()
     
+if __name__=="__main__":
+    # Example usage
+    dataset = SemanticKITTIDataset(root_dir='/workspace/Dataset/dataset', mode='train', sequences=['00'])
+    print(len(dataset))
+    print(dataset[0])  # Access the first sample in the dataset
+
+    
+
+
+class data_prefetcher():
+    def __init__(self, loader):
+        self.loader = iter(loader)
+        self.stream = torch.cuda.Stream()
+        self.mean = torch.tensor([0.485 * 255, 0.456 * 255, 0.406 * 255]).cuda().view(1,3,1,1)
+        self.std = torch.tensor([0.229 * 255, 0.224 * 255, 0.225 * 255]).cuda().view(1,3,1,1)
+        self.preload()
+ 
+    def preload(self):
+        try:
+            self.next_input, self.next_target = next(self.loader)
+        except StopIteration:
+            self.next_input = None
+            self.next_target = None
+            return
+    
+        with torch.cuda.stream(self.stream):
+            self.next_input = self.next_input.cuda(non_blocking=True)
+            self.next_target = self.next_target.cuda(non_blocking=True)
+            self.next_input = self.next_input.float()
+            self.next_input = self.next_input.sub_(self.mean).div_(self.std)
+ 
+    def next(self):
+        torch.cuda.current_stream().wait_stream(self.stream)
+        input = self.next_input
+        target = self.next_target
+        if input is not None:
+            input.record_stream(torch.cuda.current_stream())
+        if target is not None:
+            target.record_stream(torch.cuda.current_stream())
+        self.preload()
+        return input, target
+        
 if __name__=="__main__":
     # Example usage
     dataset = SemanticKITTIDataset(root_dir='/workspace/Dataset/dataset', mode='train', sequences=['00'])

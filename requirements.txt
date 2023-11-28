@@ -11,3 +11,8 @@ plotly
 numba
 pytorch-lightning
 gdown
+nvitop
+scipy 
+pyyaml 
+imageio 
+tensorboard
