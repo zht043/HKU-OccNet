@@ -16,3 +16,4 @@ scipy
 pyyaml 
 imageio 
 tensorboard
+transformers

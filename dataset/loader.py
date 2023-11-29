@@ -169,14 +169,14 @@ label_mapping_lite_from_ori = {
     49: 5,    # "other-ground"
     50: 6,    # "building"
     51: 8,    # "fence"
-    52: 0,     # "other-structure" mapped to "unlabeled" ------------------mapped ####
+    52: 8,     # "other-structure" mapped to "unlabeled" ------------------mapped #### 0->8
     60: 4,     # "lane-marking" to "road" ---------------------------------mapped
     70: 7,    # "vegetation"
     71: 7,    # "trunk"
     72: 7,    # "terrain"
     80: 8,    # "pole"
     81: 8,    # "traffic-sign"
-    99: 0,     # "other-object" to "unlabeled" ----------------------------mapped ####
+    99: 0,     # "other-object" to "unlabeled" ----------------------------mapped #### 
     252: 1,    # "moving-car" to "car" ------------------------------------mapped
     253: 3,    # "moving-bicyclist" to "bicyclist" ------------------------mapped
     254: 3,    # "moving-person" to "person" ------------------------------mapped

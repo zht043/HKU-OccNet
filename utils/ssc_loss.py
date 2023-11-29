@@ -38,27 +38,27 @@ def geo_scal_loss(pred, ssc_target):
         + F.binary_cross_entropy(spec, torch.ones_like(spec))
     )
 
-def precision_loss(pred, ssc_target):
+# def precision_loss(pred, ssc_target):
 
-    # Get softmax probabilities
-    pred = F.softmax(pred, dim=1)
+#     # Get softmax probabilities
+#     pred = F.softmax(pred, dim=1)
 
-    # Compute empty and nonempty probabilities
-    empty_probs = pred[:, 0, :, :, :]
-    nonempty_probs = 1 - empty_probs
+#     # Compute empty and nonempty probabilities
+#     empty_probs = pred[:, 0, :, :, :]
+#     nonempty_probs = 1 - empty_probs
 
-    # Remove unknown voxels
-    mask = ssc_target != 255
-    nonempty_target = ssc_target != 0
-    nonempty_target = nonempty_target[mask].float()
-    nonempty_probs = nonempty_probs[mask]
-    empty_probs = empty_probs[mask]
+#     # Remove unknown voxels
+#     mask = ssc_target != 255
+#     nonempty_target = ssc_target != 0
+#     nonempty_target = nonempty_target[mask].float()
+#     nonempty_probs = nonempty_probs[mask]
+#     empty_probs = empty_probs[mask]
 
-    intersection = (nonempty_target * nonempty_probs).sum()
-    precision = intersection / nonempty_probs.sum()
-    return (
-        F.binary_cross_entropy(precision, torch.ones_like(precision))
-    )
+#     intersection = (nonempty_target * nonempty_probs).sum()
+#     precision = intersection / nonempty_probs.sum()
+#     return (
+#         F.binary_cross_entropy(precision, torch.ones_like(precision))
+#     )
 
 def sem_scal_loss(pred, ssc_target):
     # Get softmax probabilities
@@ -118,16 +118,16 @@ def CE_ssc_loss(pred, target, class_weights):
     loss_valid_mean = torch.mean(loss_valid)
     return loss_valid_mean
 
-def BCE_ssc_loss(pred, target, class_weights, alpha):
+# def BCE_ssc_loss(pred, target, class_weights, alpha):
 
-    class_weights[0] = 1-alpha    # empty                 
-    class_weights[1] = alpha    # occupied                      
+#     class_weights[0] = 1-alpha    # empty                 
+#     class_weights[1] = alpha    # occupied                      
 
-    criterion = nn.CrossEntropyLoss(
-        weight=class_weights, ignore_index=255, reduction="none"
-    )
-    loss = criterion(pred, target.long())
-    loss_valid = loss[target!=255]
-    loss_valid_mean = torch.mean(loss_valid)
+#     criterion = nn.CrossEntropyLoss(
+#         weight=class_weights, ignore_index=255, reduction="none"
+#     )
+#     loss = criterion(pred, target.long())
+#     loss_valid = loss[target!=255]
+#     loss_valid_mean = torch.mean(loss_valid)
 
-    return loss_valid_mean
+#     return loss_valid_mean
