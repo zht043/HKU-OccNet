@@ -17,3 +17,5 @@ pyyaml
 imageio 
 tensorboard
 transformers
+h5py
+deformable-attention

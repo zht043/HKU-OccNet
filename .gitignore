@@ -161,3 +161,7 @@ cython_debug/
 #
 
 *.pth
+
+**/preprocessed_data/
+**/checkpoints/
+
