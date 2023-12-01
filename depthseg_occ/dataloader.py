@@ -77,44 +77,6 @@ class PreprocessedDataset(Dataset):
 
 
 
-def voxel_to_coordinates(voxel_data, voxel_size=0.01, threshold = 0):
-    xx, yy, zz = voxel_data.shape
-    x_coords = []
-    y_coords = []
-    z_coords = []
-    tags = []
-    for x in range(xx):
-        for y in range(yy):
-            for z in range(zz):
-                tag = voxel_data[x, y, z]
-                if tag > threshold:
-                    x_coords.append(x * voxel_size)
-                    y_coords.append(y * voxel_size)
-                    z_coords.append(z * voxel_size)
-                    tags.append(tag)
 
-    return np.array(x_coords), np.array(y_coords), np.array(z_coords), np.array(tags)
 
-def visualize_labeled_array3d(voxel_data, num_classes=7, size = None, marker = None):
-    voxel_data = voxel_data.astype(np.uint16)
-    x, y, z, tags = voxel_to_coordinates(voxel_data, voxel_size = 1 / voxel_data.shape[0])
-    color_scale = bqplot.scales.ColorScale(min=0, max=num_classes, colors=["#f00", "#00f", "#000000", "#808080", "#0f0", "#800080"])
-    fig = ipv.figure()
-    unique_tags = np.unique(tags)
 
-    for tag in unique_tags:
-        mask = tags == tag
-        x_filtered, y_filtered, z_filtered, tags_f = x[mask], y[mask], z[mask], tags[mask]
-        
-        ipv.scatter(1-y_filtered,x_filtered, z_filtered, color=tags_f, color_scale=color_scale, marker=marker or 'box', size=size or 0.1, description="len({})={}".format(str(tag),x_filtered.shape[0]))
-    ipv.xyzlabel('y','x','z')
-    ipv.view(0, -50, distance=2.5)
-    ipv.show()
-
-def plot_tensor2d(img_tensor):
-    tensor = img_tensor.permute(1, 2, 0)
-    tensor = (tensor - tensor.min()) / (tensor.max() - tensor.min())
-    plt.imshow(tensor)
-
-def plot_voxel3d(voxel_tensor, shape=(64, 64, 8), size=2):
-    visualize_labeled_array3d((voxel_tensor.view(shape).float()).detach().cpu().numpy(), size=size, marker='box')
